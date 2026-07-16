@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Astro generated types
+.astro/
+
+# Environment
+.env
+.env.*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# Claude Code custom tooling config
+.claude/
+
+# Stray Chrome-profile dirs that Lighthouse creates when run under WSL
+# (it mangles the Windows temp path into a literal directory name)
+C:*

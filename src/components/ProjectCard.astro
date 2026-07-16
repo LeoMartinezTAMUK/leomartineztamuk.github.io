@@ -1,0 +1,173 @@
+---
+import type { Project } from '../data/types';
+import Icon from './Icon.astro';
+import Tag from './Tag.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<article class="card reveal" data-spectrum={project.spectrum}>
+  <div class="card-main">
+    <div class="card-head">
+      <h3>{project.name}</h3>
+      <Tag spectrum={project.spectrum} />
+      {project.badge && <span class="badge">{project.badge}</span>}
+    </div>
+    <p class="tagline">{project.tagline}</p>
+    <p class="impact">{project.impact}</p>
+  </div>
+  <div class="card-side">
+    <p class="side-label kicker">stack</p>
+    <ul class="tech">
+      {project.tech.map((t) => <li>{t}</li>)}
+    </ul>
+    {
+      project.github ? (
+        <a
+          class="src"
+          href={project.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          source
+          <Icon name="external" size={14} />
+        </a>
+      ) : (
+        <span class="src src-private">
+          <Icon name="lock" size={13} />
+          private repo
+        </span>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 2rem;
+    padding: 1.9rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    transition: border-color 0.2s ease;
+  }
+
+  /* Hover tint follows the project's place on the spectrum. */
+  .card[data-spectrum='build']:hover {
+    border-color: var(--build-line);
+  }
+
+  .card[data-spectrum='break']:hover {
+    border-color: var(--break-line);
+  }
+
+  .card[data-spectrum='both']:hover {
+    border-color: var(--both-line);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--both);
+    border: 1px dashed var(--both-line);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-top: 0.35rem;
+  }
+
+  .impact {
+    margin-top: 1rem;
+    max-width: 58ch;
+  }
+
+  .card-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    border-left: 1px solid var(--line);
+    padding-left: 1.5rem;
+  }
+
+  .tech {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tech li {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .src {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  a.src:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .src-private {
+    color: var(--faint);
+  }
+
+  @media (max-width: 720px) {
+    .card {
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+      padding: 1.4rem;
+    }
+
+    .card-side {
+      border-left: none;
+      border-top: 1px solid var(--line);
+      padding-left: 0;
+      padding-top: 1.25rem;
+    }
+
+    .src {
+      margin-top: 0.25rem;
+    }
+  }
+</style>

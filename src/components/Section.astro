@@ -1,0 +1,32 @@
+---
+/**
+ * A numbered page section: mono index kicker, display title, dual rule,
+ * then whatever the page slots in.
+ */
+import DualRule from './DualRule.astro';
+
+interface Props {
+  id: string;
+  index: string;
+  title: string;
+}
+
+const { id, index, title } = Astro.props;
+---
+
+<section id={id} class="section">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{index} / {id}</p>
+      <h2 class="section-title">{title}</h2>
+      <DualRule />
+    </header>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section-head {
+    margin-bottom: 2.75rem;
+  }
+</style>

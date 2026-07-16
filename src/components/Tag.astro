@@ -1,0 +1,16 @@
+---
+/**
+ * Spectrum tag - the site's recurring motif. Blue "build", red "break",
+ * violet "both". Styles live in global.css so the timeline legend can
+ * reuse them.
+ */
+import type { Spectrum } from '../data/types';
+
+interface Props {
+  spectrum: Spectrum;
+}
+
+const { spectrum } = Astro.props;
+---
+
+<span class={`tag tag-${spectrum}`}>{spectrum}</span>

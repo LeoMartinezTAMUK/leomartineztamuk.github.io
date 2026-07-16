@@ -1,0 +1,29 @@
+{
+  "name": "leo-martinez-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio of Leo Martinez III — AI/LLM Security Engineer",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "og": "node scripts/generate-og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.0.0",
+    "@fontsource-variable/inter": "^5.0.0",
+    "@fontsource-variable/jetbrains-mono": "^5.0.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.0.0",
+    "astro": "^7.0.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@resvg/resvg-js": "^2.6.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,702 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import TimelineItem from '../components/TimelineItem.astro';
+import Icon from '../components/Icon.astro';
+import DualRule from '../components/DualRule.astro';
+
+import { site } from '../data/site';
+import { projects, moreProjects } from '../data/projects';
+import { experience } from '../data/experience';
+import { degrees, research } from '../data/education';
+import { skillGroups, certifications, awards } from '../data/skills';
+import { withBase } from '../lib/url';
+
+// Non-breaking spaces inside each org name so the trust line only ever
+// wraps between orgs, never mid-name.
+const NBSP = String.fromCharCode(160);
+const orgsLine = site.orgs
+  .map((org) => org.replaceAll(' ', NBSP))
+  .join(' · ');
+const resumeHref = withBase('resume.pdf');
+---
+
+<Base>
+  <!-- ============ Hero ============ -->
+  <section id="top" class="hero">
+    <div class="container">
+      <h1 class="who">
+        <span class="name">{site.name}</span>
+        <span class="role"> · {site.role}</span>
+      </h1>
+      <p class="statement">
+        {site.statement.pre}<em class="em-build">{site.statement.build}</em>{site.statement.mid}<em class="em-break">{site.statement.break}</em>{site.statement.post}
+      </p>
+      <DualRule width={96} />
+      <p class="support">{site.heroSupport}</p>
+      <div class="cta">
+        <a class="btn" href="#projects">View projects</a>
+        <a class="btn btn-outline" href={resumeHref} download>
+          <Icon name="download" size={16} />
+          Resume
+        </a>
+        <a
+          class="btn-ghost"
+          href={site.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+          <Icon name="external" size={15} />
+        </a>
+      </div>
+      <p class="orgs">{orgsLine}</p>
+    </div>
+  </section>
+
+  <!-- ============ About ============ -->
+  <Section id="about" index="01" title="Both sides of the problem">
+    <div class="about-grid">
+      <div class="prose reveal">
+        <p>
+          I work at the intersection of AI and security. Right now that
+          means <strong>adversarial LLM agent evaluation</strong> at SAIC,
+          partnered with Scale AI: jailbreaks, prompt injection, policy
+          bypasses, unsafe cyber outputs, and the cyber-focused eval scenarios
+          that surface exploitable agent behavior before someone else finds it.
+        </p>
+        <p>
+          Before that, I built LLM-powered repair agents
+          at <strong>Lawrence Livermore National Laboratory</strong> for
+          DOE/NNSA, analyzed threat reports for DHS/CBP's Cyber Threat
+          Intelligence team, shipped patient-facing software at CVS Health,
+          and spent two and a half years as a graduate researcher training
+          deep models for intrusion detection, work that became my master's
+          thesis and an <strong>ICAIC 2026 publication</strong>.
+        </p>
+        <p>
+          That range is the point. I know how AI systems get built, so I know
+          where they break. I've taken work from research prototype to
+          published result to production, and I test what I ship the way an
+          adversary would. Building and breaking aren't opposite skills;
+          they're the same one.
+        </p>
+      </div>
+      <aside class="facts reveal" aria-label="Quick facts">
+        <dl>
+          <div>
+            <dt>now</dt>
+            <dd>Senior AI/LLM Security Engineer, SAIC × Scale AI</dd>
+          </div>
+          <div>
+            <dt>focus</dt>
+            <dd>Adversarial LLM evals · AI agents · threat detection</dd>
+          </div>
+          <div>
+            <dt>based</dt>
+            <dd>{site.location} · {site.availability}</dd>
+          </div>
+          <div>
+            <dt>education</dt>
+            <dd>M.S. Computer Science, 4.0 GPA</dd>
+          </div>
+          <div>
+            <dt>certifications</dt>
+            <dd>Security+ · CySA+ · CSAP</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </Section>
+
+  <!-- ============ Projects ============ -->
+  <Section id="projects" index="02" title="Selected projects">
+    <p class="section-note reveal">
+      Work across the spectrum: building AI systems, breaking them, and the
+      research that sits in between.
+    </p>
+    <div class="stack">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </div>
+
+    <p class="more-label kicker reveal">more projects</p>
+    <ul class="mini-grid">
+      {
+        moreProjects.map((m) => (
+          <li class="mini reveal" data-spectrum={m.spectrum}>
+            <a href={m.github} target="_blank" rel="noopener noreferrer">
+              <span class="mini-dot" aria-hidden="true" />
+              <span class="mini-body">
+                <span class="mini-name">
+                  {m.name}
+                  <Icon name="external" size={13} />
+                </span>
+                <span class="mini-blurb">{m.blurb}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="more reveal">
+      <a
+        class="btn-ghost"
+        href={site.github}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Everything on GitHub
+        <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </Section>
+
+  <!-- ============ Experience ============ -->
+  <Section id="experience" index="03" title="Where I've worked">
+    <p class="legend reveal">
+      <span class="tag tag-build">build</span>
+      <span class="tag tag-break">break</span>
+      <span class="tag tag-both">both</span>
+      <span class="legend-note">every role sits somewhere on the axis</span>
+    </p>
+    <ol class="timeline">
+      {experience.map((r) => <TimelineItem role={r} />)}
+    </ol>
+  </Section>
+
+  <!-- ============ Education & research ============ -->
+  <Section id="education" index="04" title="Education & research">
+    <div class="degrees">
+      {
+        degrees.map((d) => (
+          <article class="degree reveal">
+            <h3>{d.degree}</h3>
+            <p class="school">{d.school}</p>
+            <p class="deg-meta">
+              {[d.detail, d.gpa, d.years].filter(Boolean).join(' · ')}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+    <ul class="research">
+      {
+        research.map((item) => (
+          <li class="reveal">
+            <span class="kind kicker">{item.kind}</span>
+            <div>
+              <p class="r-title">
+                {item.href ? (
+                  <a href={item.href} target="_blank" rel="noopener noreferrer">
+                    {item.title}
+                  </a>
+                ) : (
+                  item.title
+                )}
+              </p>
+              {item.note && <p class="r-note">{item.note}</p>}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="more reveal">
+      <a
+        class="btn-ghost"
+        href={site.researchgate}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        All publications on ResearchGate
+        <Icon name="external" size={15} />
+      </a>
+    </div>
+  </Section>
+
+  <!-- ============ Skills & certifications ============ -->
+  <Section id="skills" index="05" title="Skills & certifications">
+    <div class="skill-grid">
+      {
+        skillGroups.map((g) => (
+          <div class="group reveal">
+            <p class="kicker">{g.label}</p>
+            <ul>
+              {g.items.map((i) => (
+                <li>{i}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <div class="cert-row">
+      {
+        certifications.map((c) => (
+          <div class="cert reveal">
+            <Icon name="shield" size={19} />
+            <div>
+              <p class="cert-name">{c.name}</p>
+              <p class="cert-issuer">{c.issuer}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="awards reveal">
+      <span class="kicker">awards</span>
+      {awards.join(' · ')}
+    </p>
+  </Section>
+
+  <!-- ============ Contact ============ -->
+  <Section id="contact" index="06" title="Let's put your AI to the test">
+    <p class="contact-lede reveal">
+      Hiring for AI security, ML engineering, or red-team work? Or just want
+      to talk agent evals and adversarial ML? My inbox is open.
+    </p>
+    <div class="cta reveal">
+      <a class="btn" href={`mailto:${site.email}`}>
+        <Icon name="mail" size={16} />
+        Email me
+      </a>
+      <a
+        class="btn btn-outline"
+        href={site.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LinkedIn
+        <Icon name="external" size={15} />
+      </a>
+      <a class="btn btn-outline" href={resumeHref} download>
+        <Icon name="download" size={16} />
+        Resume
+      </a>
+    </div>
+    <p class="contact-meta reveal">
+      {site.location.toLowerCase()} · {site.availability} · {site.email}
+    </p>
+  </Section>
+</Base>
+
+<style>
+  /* ---- Hero ---- */
+  .hero {
+    padding-block: clamp(5.5rem, 13vh, 8.5rem) clamp(4rem, 9vh, 6rem);
+  }
+
+  .who {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.07em;
+  }
+
+  .who .role {
+    color: var(--muted);
+  }
+
+  .statement {
+    margin-top: 1.6rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.05rem, 5.6vw, 3.55rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 720px;
+  }
+
+  .statement em {
+    font-style: normal;
+  }
+
+  .em-build {
+    color: var(--build);
+  }
+
+  .em-break {
+    color: var(--break);
+  }
+
+  /* The two key words tint in shortly after load - the site's one flourish. */
+  @media (prefers-reduced-motion: no-preference) {
+    .em-build {
+      animation: tint-build 0.8s ease 0.4s both;
+    }
+
+    .em-break {
+      animation: tint-break 0.8s ease 0.7s both;
+    }
+  }
+
+  @keyframes tint-build {
+    from {
+      color: var(--text);
+    }
+    to {
+      color: var(--build);
+    }
+  }
+
+  @keyframes tint-break {
+    from {
+      color: var(--text);
+    }
+    to {
+      color: var(--break);
+    }
+  }
+
+  .support {
+    margin-top: 1.5rem;
+    color: var(--muted);
+    max-width: 54ch;
+    font-size: 1.05rem;
+  }
+
+  .cta {
+    margin-top: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .orgs {
+    margin-top: 3.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+    max-width: 60ch;
+  }
+
+  /* ---- About ---- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 3rem;
+  }
+
+  .prose {
+    max-width: 62ch;
+  }
+
+  .facts {
+    align-self: start;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.5rem;
+    background: var(--surface);
+  }
+
+  .facts dl {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--faint);
+  }
+
+  .facts dd {
+    margin: 0.15rem 0 0;
+    font-size: 0.92rem;
+  }
+
+  /* ---- Projects ---- */
+  .section-note {
+    margin: -1.75rem 0 2rem;
+    color: var(--muted);
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .more {
+    margin-top: 1.5rem;
+  }
+
+  /* ---- Secondary "more projects" grid ---- */
+  .more-label {
+    margin: 2.75rem 0 1rem;
+  }
+
+  .mini-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* 240px min lets all four tiles share one row on desktop. */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .mini a {
+    display: flex;
+    gap: 0.8rem;
+    height: 100%;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .mini[data-spectrum='build'] a:hover {
+    border-color: var(--build-line);
+  }
+
+  .mini[data-spectrum='break'] a:hover {
+    border-color: var(--break-line);
+  }
+
+  .mini[data-spectrum='both'] a:hover {
+    border-color: var(--both-line);
+  }
+
+  .mini-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .mini[data-spectrum='build'] .mini-dot {
+    background: var(--build);
+  }
+
+  .mini[data-spectrum='break'] .mini-dot {
+    background: var(--break);
+  }
+
+  .mini[data-spectrum='both'] .mini-dot {
+    background: var(--both);
+  }
+
+  .mini-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mini-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .mini-name :global(svg) {
+    color: var(--faint);
+  }
+
+  .mini-blurb {
+    font-size: 0.86rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ---- Experience ---- */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: -1.75rem 0 2.25rem;
+  }
+
+  .legend-note {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--faint);
+    margin-left: 0.35rem;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0 0;
+    border-left: 1px solid var(--line);
+  }
+
+  /* ---- Education & research ---- */
+  .degrees {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .degree {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.5rem;
+    background: var(--surface);
+  }
+
+  .degree h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .school {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-top: 0.3rem;
+  }
+
+  .deg-meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-top: 0.8rem;
+  }
+
+  .research {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .research li {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .r-title {
+    font-size: 0.98rem;
+    font-weight: 500;
+  }
+
+  .r-title a {
+    color: var(--text);
+    text-underline-offset: 3px;
+  }
+
+  .r-note {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--faint);
+    margin-top: 0.2rem;
+  }
+
+  /* ---- Skills ---- */
+  .skill-grid {
+    display: grid;
+    /* 180px min lets all five groups share one row on desktop. */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .group ul {
+    list-style: none;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .group li {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .cert-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2.75rem;
+  }
+
+  .cert {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    padding: 0.85rem 1.2rem;
+    background: var(--surface);
+    color: var(--muted);
+  }
+
+  .cert-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .cert-issuer {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+  }
+
+  .awards {
+    margin-top: 2.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 60ch;
+  }
+
+  .awards .kicker {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ---- Contact ---- */
+  .contact-lede {
+    margin-top: -1.5rem;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+
+  .contact-meta {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--faint);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 860px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .research li {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+  }
+</style>

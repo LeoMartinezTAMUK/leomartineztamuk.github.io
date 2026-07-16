@@ -1,0 +1,366 @@
+---
+/**
+ * Base layout: document head (SEO, Open Graph, JSON-LD), sticky section nav,
+ * footer, and the site's two small scripts (scroll reveal + active-nav).
+ */
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+
+// Resolved (hashed) URL of the display font's latin subset, so it can be
+// preloaded below. The ?url import guarantees the preload always points at
+// the exact same asset the @font-face CSS references.
+import displayFontUrl from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
+
+import Icon from '../components/Icon.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = site.title, description = site.description } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(withBase('og.png'), Astro.site);
+
+const navItems = [
+  'about',
+  'projects',
+  'experience',
+  'education',
+  'skills',
+  'contact',
+] as const;
+
+/** JSON-LD Person schema for rich search results. */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role,
+  email: `mailto:${site.email}`,
+  url: Astro.site?.toString(),
+  sameAs: [site.linkedin, site.github, site.researchgate],
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: 'TX',
+    addressCountry: 'US',
+  },
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Texas A&M University-Kingsville',
+  },
+  knowsAbout: [
+    'AI security',
+    'LLM red-teaming',
+    'Adversarial machine learning',
+    'Autonomous coding agents',
+    'Network intrusion detection',
+    'Cybersecurity',
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* Fetch the hero's display font immediately instead of after layout,
+        so the statement paints in its real face on first render. */}
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={displayFontUrl}
+      crossorigin
+    />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={withBase('apple-touch-icon.png')}
+    />
+    <link rel="sitemap" href={withBase('sitemap-index.xml')} />
+    <meta name="theme-color" id="meta-theme-color" content="#0C0E12" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} · ${site.role}`} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(jsonLd)}
+    />
+
+    <script is:inline>
+      // Runs before first paint: gate JS-only styles, then set the theme
+      // (stored preference, else system preference, else dark-first default).
+      document.documentElement.classList.add('js');
+      let theme = 'dark';
+      try {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          theme = stored;
+        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          theme = 'light';
+        }
+      } catch {
+        // localStorage unavailable (e.g. blocked); keep the dark default.
+      }
+      document.documentElement.dataset.theme = theme;
+      // Keep the browser UI tint in sync with the active theme.
+      var themeMeta = document.getElementById('meta-theme-color');
+      if (themeMeta) {
+        themeMeta.setAttribute(
+          'content',
+          theme === 'light' ? '#F6F7F9' : '#0C0E12'
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-head">
+      <div class="container nav-row">
+        {/* Accessible name starts with the visible text (WCAG 2.5.3). */}
+        <a class="brand" href={withBase('')} aria-label="lm·iii, Leo Martinez III, home">
+          lm·iii
+        </a>
+        <nav aria-label="Sections">
+          <ul>
+            {
+              navItems.map((item) => (
+                <li>
+                  <a href={`${withBase('')}#${item}`}>{item}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <ThemeToggle />
+      </div>
+    </header>
+
+    {/* tabindex="-1" lets the skip link actually move keyboard focus here. */}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <div class="container foot-row">
+        <p>© {new Date().getFullYear()} Leo Martinez III</p>
+        <div class="foot-links">
+          <a
+            href={site.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <Icon name="github" size={17} />
+          </a>
+          <a
+            href={site.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+          >
+            <Icon name="linkedin" size={17} />
+          </a>
+          <a href={`mailto:${site.email}`} aria-label="Email">
+            <Icon name="mail" size={17} />
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Scroll reveal: sections fade in once, unless the visitor prefers
+      // reduced motion (then everything is shown immediately).
+      const reduceMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+      const revealEls = document.querySelectorAll<HTMLElement>('.reveal');
+
+      if (reduceMotion) {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+        );
+        revealEls.forEach((el) => io.observe(el));
+      }
+
+      // Highlight the nav link for the section currently in view.
+      const navLinks = new Map<string, HTMLAnchorElement>();
+      document
+        .querySelectorAll<HTMLAnchorElement>('header nav a[href*="#"]')
+        .forEach((a) => {
+          const id = a.href.split('#')[1];
+          if (id) navLinks.set(id, a);
+        });
+
+      const sectionObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const link = navLinks.get(entry.target.id);
+            if (!link || !entry.isIntersecting) continue;
+            navLinks.forEach((l) => l.removeAttribute('aria-current'));
+            link.setAttribute('aria-current', 'true');
+          }
+        },
+        { rootMargin: '-40% 0px -55% 0px' }
+      );
+      document
+        .querySelectorAll('main section[id]')
+        .forEach((s) => sectionObserver.observe(s));
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 60px;
+  }
+
+  .brand {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  nav {
+    flex: 1;
+    min-width: 0;
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.35rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Fade the right edge as a scroll hint when links overflow (mobile). */
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      #000 calc(100% - 28px),
+      transparent
+    );
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+
+  nav ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  nav a {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    padding-block: 0.35rem;
+    transition: color 0.15s ease;
+  }
+
+  nav a:hover {
+    color: var(--text);
+  }
+
+  nav a[aria-current='true'] {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--build);
+    text-underline-offset: 7px;
+  }
+
+  .site-foot {
+    border-top: 1px solid var(--line);
+    padding-block: 1.75rem;
+  }
+
+  .foot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .foot-row p {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--faint);
+  }
+
+  .foot-links {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .foot-links a {
+    display: inline-flex;
+    padding: 0.5rem;
+    color: var(--muted);
+    border-radius: 8px;
+    transition: color 0.15s ease;
+  }
+
+  .foot-links a:hover {
+    color: var(--text);
+  }
+</style>

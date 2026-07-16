@@ -1,0 +1,102 @@
+---
+import type { Role } from '../data/types';
+
+interface Props {
+  role: Role;
+}
+
+const { role } = Astro.props;
+---
+
+<li class="item reveal" data-spectrum={role.spectrum}>
+  <span class="marker" aria-hidden="true"></span>
+  <div class="head">
+    <h3>{role.title}</h3>
+    <p class="org">{role.org}</p>
+    {/* The marker color encodes this; say it for screen readers too. */}
+    <span class="sr-only">spectrum: {role.spectrum}</span>
+  </div>
+  <p class="meta">
+    {role.dates}{role.location && ` · ${role.location}`}
+  </p>
+  {
+    role.bullets.length > 0 && (
+      <ul class="bullets">
+        {role.bullets.map((b) => (
+          <li>{b}</li>
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .item {
+    position: relative;
+    padding: 0 0 2.6rem 2rem;
+  }
+
+  .item:last-child {
+    padding-bottom: 0.5rem;
+  }
+
+  .marker {
+    position: absolute;
+    left: -5.5px;
+    top: 0.5rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--muted);
+  }
+
+  .item[data-spectrum='build'] .marker {
+    border-color: var(--build);
+  }
+
+  .item[data-spectrum='break'] .marker {
+    border-color: var(--break);
+  }
+
+  .item[data-spectrum='both'] .marker {
+    border-color: var(--both);
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .org {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--faint);
+    margin-top: 0.25rem;
+  }
+
+  .bullets {
+    margin: 0.7rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 66ch;
+  }
+
+  .bullets li + li {
+    margin-top: 0.4rem;
+  }
+</style>

@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Leo Martinez III - portfolio design system
+   Direction: "dual spectrum" - blue = build, red = break, violet = both.
+   The page stays ~90% monochrome; the two accents appear only where they
+   carry meaning: the hero statement, spectrum tags, and timeline markers.
+   ========================================================================== */
+
+/* ---- Metric-matched font fallbacks ----
+   Local system fonts adjusted (via @capsizecss/metrics) to occupy the same
+   space as the webfonts, so text barely shifts when the real fonts load. */
+@font-face {
+  font-family: 'Schibsted Grotesk Fallback';
+  src: local('Arial'), local('Liberation Sans');
+  size-adjust: 104.49%;
+  ascent-override: 93.46%;
+  descent-override: 24.67%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Liberation Sans');
+  size-adjust: 107.12%;
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New'), local('Liberation Mono');
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+
+/* ---- Design tokens ---- */
+:root {
+  --font-display: 'Schibsted Grotesk Variable', 'Schibsted Grotesk Fallback', system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Inter Fallback', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono Fallback', ui-monospace, monospace;
+
+  /* Dark theme (default) */
+  --bg: #0C0E12;
+  --surface: #13161C;
+  --surface-2: #191D25;
+  --line: #232833;
+  --line-strong: #303845;
+  --text: #E9EDF3;
+  --muted: #98A2B3;
+  --faint: #7E8899;
+
+  --build: #5B9DFF;
+  --break: #FF5D5D;
+  --both: #A18CFF;
+  --build-soft: rgb(91 157 255 / 0.11);
+  --break-soft: rgb(255 93 93 / 0.11);
+  --both-soft: rgb(161 140 255 / 0.11);
+  --build-line: rgb(91 157 255 / 0.35);
+  --break-line: rgb(255 93 93 / 0.35);
+  --both-line: rgb(161 140 255 / 0.35);
+
+  --btn-bg: #E9EDF3;
+  --btn-fg: #0C0E12;
+  --nav-bg: rgb(12 14 18 / 0.86);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #F6F7F9;
+  --surface: #FFFFFF;
+  --surface-2: #EDF0F4;
+  --line: #DFE3EA;
+  --line-strong: #C9D0DA;
+  --text: #161A21;
+  --muted: #4E5A6B;
+  --faint: #66717F;
+
+  --build: #1D55C0;
+  --break: #C02F3A;
+  --both: #5C48D8;
+  --build-soft: rgb(29 85 192 / 0.09);
+  --break-soft: rgb(192 47 58 / 0.09);
+  --both-soft: rgb(92 72 216 / 0.09);
+  --build-line: rgb(29 85 192 / 0.35);
+  --break-line: rgb(192 47 58 / 0.35);
+  --both-line: rgb(92 72 216 / 0.35);
+
+  --btn-bg: #161A21;
+  --btn-fg: #F6F7F9;
+  --nav-bg: rgb(246 247 249 / 0.86);
+
+  color-scheme: light;
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  /* Avoid single-word "orphans" on the last line of paragraphs and bullets.
+     Progressive enhancement: ignored by browsers that don't support it. */
+  text-wrap: pretty;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+::selection {
+  background: rgb(91 157 255 / 0.28);
+}
+
+:focus-visible {
+  outline: 2px solid var(--build);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---- Skip link ---- */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3.5rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: top 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+/* The skip link moves focus here programmatically; no ring needed. */
+main:focus {
+  outline: none;
+}
+
+/* Visually hidden but available to screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Layout ---- */
+.container {
+  width: min(100% - 3rem, 1060px);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(4rem, 9vw, 6.5rem);
+  border-top: 1px solid var(--line);
+  /* Keep anchored sections clear of the 60px sticky header. */
+  scroll-margin-top: 60px;
+}
+
+/* ---- Typography helpers ---- */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.65rem, 3.6vw, 2.15rem);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-top: 0.6rem;
+}
+
+.prose p + p {
+  margin-top: 1rem;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid transparent;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.btn-outline:hover {
+  opacity: 1;
+  border-color: var(--muted);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 0.4rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+}
+
+/* ---- Spectrum tags (build / break / both) ---- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.tag-build {
+  color: var(--build);
+  border-color: var(--build-line);
+  background: var(--build-soft);
+}
+
+.tag-break {
+  color: var(--break);
+  border-color: var(--break-line);
+  background: var(--break-soft);
+}
+
+.tag-both {
+  color: var(--both);
+  border-color: var(--both-line);
+  background: var(--both-soft);
+}
+
+/* ---- Scroll reveal (opt-in, JS-gated so no-JS visitors see everything) ---- */
+html.js .reveal {
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.55s ease, translate 0.55s ease;
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}

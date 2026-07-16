@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { withBase } from '../lib/url';
+---
+
+<Base title="404 · Leo Martinez III">
+  <section class="nf">
+    <div class="container">
+      <p class="kicker">404 / not found</p>
+      <h1>This path doesn't resolve.</h1>
+      <a class="btn" href={withBase('')}>Back home</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: 8rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    letter-spacing: -0.015em;
+    margin: 0.8rem 0 2rem;
+  }
+</style>
